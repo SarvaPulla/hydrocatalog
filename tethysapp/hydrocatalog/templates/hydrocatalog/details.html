@@ -16,7 +16,7 @@
     {% endif %}
 
 <div class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/hydrocatalog/images/loader.gif" /></div>
-
+<a id="download-xml" class="btn btn-primary hidden" target="_blank" href="/apps/hydrocatalog/xml/" >Download XML</a>
 {% if soap %}
 <form id="soap_variable" action="/apps/hydrocatalog/soap-api/" method="POST">
     {% csrf_token %}
@@ -35,6 +35,7 @@
         </div>
     </div>
 </form>
+
 {% endif %}
 
 <!--{% gizmo plot_view timeseries_plot %}-->

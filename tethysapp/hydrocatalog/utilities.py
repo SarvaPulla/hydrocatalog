@@ -51,6 +51,7 @@ def parseWML(bbox):
         for site in bbox_json['site']:
             hs_json = {}
             site_name =  site['siteInfo']['siteName']
+            site_name = site_name.encode("utf-8")
             latitude = site['siteInfo']['geoLocation']['geogLocation']['latitude']
             longitude = site['siteInfo']['geoLocation']['geogLocation']['longitude']
             network = site['siteInfo']['siteCode'][0]['_network']
@@ -66,6 +67,7 @@ def parseWML(bbox):
     else:
         hs_json = {}
         site_name = bbox_json['site']['siteInfo']['siteName']
+        site_name = site_name.encode("utf-8")
         latitude = bbox_json['site']['siteInfo']['geoLocation']['geogLocation']['latitude']
         longitude = bbox_json['site']['siteInfo']['geoLocation']['geogLocation']['longitude']
         network = bbox_json['site']['siteInfo']['siteCode'][0]['_network']
@@ -90,6 +92,7 @@ def parseJSON(json):
             latitude = site['siteInfo']['geoLocation']['geogLocation']['latitude']
             longitude = site['siteInfo']['geoLocation']['geogLocation']['longitude']
             site_name = site['siteInfo']['siteName']
+            site_name = site_name.encode("utf-8")
             network = site['siteInfo']['siteCode']["@network"]
             sitecode = site['siteInfo']['siteCode']["#text"]
 
@@ -105,6 +108,7 @@ def parseJSON(json):
         latitude = sites_object['siteInfo']['geoLocation']['geogLocation']['latitude']
         longitude = sites_object['siteInfo']['geoLocation']['geogLocation']['longitude']
         site_name = sites_object['siteInfo']['siteName']
+        site_name = site_name.encode("utf-8")
         network = sites_object['siteInfo']['siteCode']["@network"]
         sitecode = sites_object['siteInfo']['siteCode']["#text"]
 
@@ -133,6 +137,8 @@ def genShapeFile(input,title,geo_url,username,password,hs_url):
 
         for item in input:
             w.point(float(item['longitude']),float(item['latitude']))
+            site_name = item['sitename']
+            site_name.decode("utf-8")
             w.record(item['sitename'],item['sitecode'],item['network'],item['service'],hs_url, 'Point')
 
         w.save(file_location)

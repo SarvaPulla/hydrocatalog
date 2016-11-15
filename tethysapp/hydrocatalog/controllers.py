@@ -374,7 +374,7 @@ def soap_var(request):
     return JsonResponse(var_object)
 
 def soap_api(request):
-    soap_object = None
+    graph_json = None
     if 'soap_obj' in request.session:
             soap_object = request.session['soap_obj']
             url = soap_object['url']
@@ -383,8 +383,13 @@ def soap_api(request):
             variable =  request.POST['select_var']
             start_date = request.POST["start_date"]
             end_date = request.POST["end_date"]
-            variable =  str(variable)
-            variable =  variable.replace("[","").replace("]","").replace("u","").replace(" ","").replace("'","")
+            var_data = {}
+            var_data['variable'] = variable
+            var_data['start_date'] = start_date
+            var_data['end_date'] = end_date
+            request.session['var_data'] = var_data
+            variable = str(variable)
+            variable = variable.replace("[","").replace("]","").replace("u","").replace(" ","").replace("'","")
             variable = variable.split(',')
             variable_text = variable[0]
             variable_method = variable[1]
@@ -443,8 +448,34 @@ def soap_api(request):
                                 graph_json["values"] = data_values
                                 graph_json["count"] = 1
 
+
     return JsonResponse(graph_json)
 
 def error(request):
     context = {}
     return render(request, 'hydrocatalog/error.html', context)
+
+def xml(request):
+    xml_response = None
+    if 'var_data' in request.session:
+        soap_object = request.session['soap_obj']
+        url = soap_object['url']
+        site_desc = soap_object['site']
+        network = soap_object['network']
+        var_object = request.session['var_data']
+        variable = var_object['variable']
+        start_date = var_object['start_date']
+        end_date = var_object['end_date']
+        variable = str(variable)
+        variable = variable.replace("[", "").replace("]", "").replace("u", "").replace(" ", "").replace("'", "")
+        variable = variable.split(',')
+        variable_text = variable[0]
+        variable_method = variable[1]
+        variable_desc = network + ':' + variable_text
+        client = Client(url)
+        values = client.service.GetValues(site_desc, variable_desc, start_date, end_date, "")
+        xml_response = HttpResponse(values, content_type='application/xml')
+        filename = site_desc+".xml"
+        xml_response['Content-Disposition'] = "attachment; filename="+filename
+
+    return xml_response

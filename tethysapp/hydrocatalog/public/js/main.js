@@ -373,6 +373,7 @@ var HYDRO_CATALOG_PACKAGE = (function(){
     $('#btn-add-soap').on('click', add_soap);
 
     generate_plot = function(){
+        $(document).find('.warning').html('');
         var datastring = $SoapVariable.serialize();
         $.ajax({
             type: "POST",
@@ -418,6 +419,7 @@ var HYDRO_CATALOG_PACKAGE = (function(){
                     }]
 
                 });
+                $("#download-xml").removeClass('hidden');
             },
             error: function(XMLHttpRequest, textStatus, errorThrown)
             {
@@ -429,6 +431,10 @@ var HYDRO_CATALOG_PACKAGE = (function(){
     };
 
     $('#generate-plot').on('click',generate_plot);
+
+
+
+
 
     init_events = function(){
         (function () {
