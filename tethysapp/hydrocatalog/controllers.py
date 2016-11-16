@@ -372,9 +372,8 @@ def soap_var(request):
     if 'soap_obj' in request.session:
         var_object = request.session['soap_obj']
     return JsonResponse(var_object)
-
 def soap_api(request):
-    graph_json = None
+    soap_object = None
     if 'soap_obj' in request.session:
             soap_object = request.session['soap_obj']
             url = soap_object['url']
@@ -383,13 +382,8 @@ def soap_api(request):
             variable =  request.POST['select_var']
             start_date = request.POST["start_date"]
             end_date = request.POST["end_date"]
-            var_data = {}
-            var_data['variable'] = variable
-            var_data['start_date'] = start_date
-            var_data['end_date'] = end_date
-            request.session['var_data'] = var_data
-            variable = str(variable)
-            variable = variable.replace("[","").replace("]","").replace("u","").replace(" ","").replace("'","")
+            variable =  str(variable)
+            variable =  variable.replace("[","").replace("]","").replace("u","").replace(" ","").replace("'","")
             variable = variable.split(',')
             variable_text = variable[0]
             variable_method = variable[1]
@@ -411,7 +405,24 @@ def soap_api(request):
                         if type((times_series['values']['value'])) is list:
                             count = 0
                             for k in times_series['values']['value']:
-                                if k['@methodCode'] == variable_method:
+                                try:
+                                    if k['@methodCode'] in times_series['values']['value']:
+                                        count = count + 1
+                                        time = k['@dateTimeUTC']
+                                        time1 = time.replace("T", "-")
+                                        time_split = time1.split("-")
+                                        year = int(time_split[0])
+                                        month = int(time_split[1])
+                                        day = int(time_split[2])
+                                        hour_minute = time_split[3].split(":")
+                                        hour = int(hour_minute[0])
+                                        minute = int(hour_minute[1])
+                                        value = float(str(k['#text']))
+                                        date_string = datetime(year, month, day, hour, minute)
+                                        time_stamp = calendar.timegm(date_string.utctimetuple()) * 1000
+                                        data_values.append([time_stamp, value])
+                                        data_values.sort()
+                                except KeyError:
                                     count = count + 1
                                     time = k['@dateTimeUTC']
                                     time1 = time.replace("T", "-")
@@ -430,7 +441,25 @@ def soap_api(request):
                                 graph_json["values"] = data_values
                                 graph_json["count"] = count
                         else:
-                            if times_series['values']['value']['@methodCode'] == variable_method:
+                            try:
+                                if times_series['values']['value']['@methodCode'] == variable_method:
+                                    time = times_series['values']['value']['@dateTimeUTC']
+                                    time1 = time.replace("T", "-")
+                                    time_split = time1.split("-")
+                                    year = int(time_split[0])
+                                    month = int(time_split[1])
+                                    day = int(time_split[2])
+                                    hour_minute = time_split[3].split(":")
+                                    hour = int(hour_minute[0])
+                                    minute = int(hour_minute[1])
+                                    value = float(str(times_series['values']['value']['#text']))
+                                    date_string = datetime(year, month, day, hour, minute)
+                                    time_stamp = calendar.timegm(date_string.utctimetuple()) * 1000
+                                    data_values.append([time_stamp, value])
+                                    data_values.sort()
+                                    graph_json["values"] = data_values
+                                    graph_json["count"] = 1
+                            except KeyError:
                                 time = times_series['values']['value']['@dateTimeUTC']
                                 time1 = time.replace("T", "-")
                                 time_split = time1.split("-")
@@ -447,8 +476,6 @@ def soap_api(request):
                                 data_values.sort()
                                 graph_json["values"] = data_values
                                 graph_json["count"] = 1
-
-
     return JsonResponse(graph_json)
 
 def error(request):
