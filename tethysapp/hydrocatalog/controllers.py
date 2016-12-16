@@ -406,7 +406,7 @@ def soap_api(request):
                             count = 0
                             for k in times_series['values']['value']:
                                 try:
-                                    if k['@methodCode'] in times_series['values']['value']:
+                                    if k['@methodCode'] == variable_method:
                                         count = count + 1
                                         time = k['@dateTimeUTC']
                                         time1 = time.replace("T", "-")
@@ -422,6 +422,8 @@ def soap_api(request):
                                         time_stamp = calendar.timegm(date_string.utctimetuple()) * 1000
                                         data_values.append([time_stamp, value])
                                         data_values.sort()
+                                    graph_json["values"] = data_values
+                                    graph_json["count"] = count
                                 except KeyError:
                                     count = count + 1
                                     time = k['@dateTimeUTC']
@@ -476,6 +478,7 @@ def soap_api(request):
                                 data_values.sort()
                                 graph_json["values"] = data_values
                                 graph_json["count"] = 1
+
     return JsonResponse(graph_json)
 
 def error(request):
