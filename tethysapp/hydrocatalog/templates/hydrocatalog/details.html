@@ -15,7 +15,7 @@
     <h1 style="color:red">{{error_message}}</h1>
     {% endif %}
 
-<div class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/hydrocatalog/images/loader.gif" /></div>
+
 <a id="download-xml" class="btn btn-primary hidden" target="_blank" href="/apps/hydrocatalog/xml/" >Download XML</a>
 {% if soap %}
 <form id="soap_variable" action="/apps/hydrocatalog/soap-api/" method="POST">
@@ -29,7 +29,7 @@
     <div>
         <div class="chart-wrapper">
             <div class="chart-inner">
-
+                <div class="flex-container-row"><img id="view-file-loading" class="view-file hidden" src="/static/hydrocatalog/images/loader.gif" /></div>
                 <div id="plotter" style="height:275px;width:100%"></div>
             </div>
         </div>

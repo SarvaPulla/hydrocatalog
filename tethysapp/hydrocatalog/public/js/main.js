@@ -381,6 +381,9 @@ var HYDRO_CATALOG_PACKAGE = (function(){
     generate_plot = function(){
         $(document).find('.warning').html('');
         var datastring = $SoapVariable.serialize();
+        var $loading = $('#view-file-loading');
+        $loading.removeClass('hidden');
+        $("#plotter").addClass('hidden');
         $.ajax({
             type: "POST",
             url: '/apps/hydrocatalog/soap-api/',
@@ -426,6 +429,8 @@ var HYDRO_CATALOG_PACKAGE = (function(){
 
                 });
                 $("#download-xml").removeClass('hidden');
+                $loading.addClass('hidden');
+                $("#plotter").removeClass('hidden');
             },
             error: function(XMLHttpRequest, textStatus, errorThrown)
             {
